@@ -1,0 +1,55 @@
+{
+  "name": "eco-server",
+  "version": "1.0.0",
+  "description": "Backend for Eco Environmental Ukraine project",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "jest",
+    "lint": "eslint src --ext .ts",
+    "migrate": "ts-node scripts/migrate.ts",
+    "seed": "ts-node scripts/seed.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sofia-kindratyshyn/eco-ua-analytics.git"
+  },
+  "author": "Sofia Kindratyshyn",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sofia-kindratyshyn/eco-ua-analytics/issues"
+  },
+  "homepage": "https://github.com/sofia-kindratyshyn/eco-ua-analytics#readme",
+  "dependencies": {
+    "axios": "^1.13.5",
+    "compression": "^1.8.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "node-cron": "^4.2.1",
+    "pg": "^8.18.0",
+    "redis": "^5.10.0",
+    "winston": "^3.19.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/compression": "^1.8.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.2.3",
+    "@types/node-cron": "^3.0.11",
+    "@types/pg": "^8.16.0",
+    "@typescript-eslint/eslint-plugin": "^8.55.0",
+    "@typescript-eslint/parser": "^8.55.0",
+    "eslint": "^9.39.2",
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
