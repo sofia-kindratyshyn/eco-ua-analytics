@@ -6,6 +6,9 @@ import {
   closeDatabaseConnection,
   testDatabaseConnection,
 } from "./config/database";
+import cron from "node-cron";
+import { AlertsService } from "./services/alerts.servise";
+import { AggregationJob } from "./jobs/aggregation.jobs";
 
 const PORT = process.env.PORT || 3000;
 
@@ -14,27 +17,55 @@ const app = createApp();
 
 async function startServer() {
   try {
-    logger.info("🚀 Starting UA Environment Dashboard API...");
+    logger.info("Starting UA Environment Dashboard API...");
 
-    // Connect to database
     await testDatabaseConnection();
 
-    // Connect to Redis
     try {
       await connectRedis();
     } catch (error) {
-      logger.warn("⚠️  Application will continue without Redis caching");
+      logger.warn("Application will continue without Redis caching");
     }
 
-    // Start background sync job
     AirQualitySyncJob.start();
+    AggregationJob.start();
 
-    // Start HTTP server
+    // Start alerts checking (every 15 minutes)
+    cron.schedule("*/15 * * * *", async () => {
+      await AlertsService.checkAlerts();
+      await AlertsService.resolveAlerts();
+    });
+    logger.info("Alerts checking started (every 15 minutes)");
+
+    // Cleanup old data daily at 2 AM
+    cron.schedule("0 2 * * *", async () => {
+      await AggregationJob.cleanOldData();
+    });
+    logger.info("Daily cleanup job scheduled (2:00 AM)");
+
     server = app.listen(PORT, () => {
       logger.info(`✅ Server running on port ${PORT}`);
-      logger.info(`📍 Environment: ${process.env.NODE_ENV || "development"}`);
-      logger.info(`🔗 Health check: http://localhost:${PORT}/health`);
-      logger.info(`🔗 API base: http://localhost:${PORT}/api/v1`);
+      logger.info(`Environment: ${process.env.NODE_ENV || "development"}`);
+      logger.info(`Health check: http://localhost:${PORT}/health`);
+      logger.info(`API base: http://localhost:${PORT}/api/v1`);
+      logger.info("");
+      logger.info("Available endpoints:");
+      logger.info("   - GET  /api/v1/regions");
+      logger.info("   - GET  /api/v1/stations");
+      logger.info("   - GET  /api/v1/air-quality");
+      logger.info("   - GET  /api/v1/analytics/history");
+      logger.info("   - GET  /api/v1/analytics/compare");
+      logger.info("   - GET  /api/v1/analytics/recommendations");
+      logger.info("   - GET  /api/v1/analytics/stats");
+      logger.info("   - GET  /api/v1/analytics/top-polluted");
+      logger.info("   - GET  /api/v1/geo/nearby");
+      logger.info("   - GET  /api/v1/geo/bounds");
+      logger.info("   - GET  /api/v1/geo/overview");
+      logger.info("   - GET  /api/v1/export/measurements/csv");
+      logger.info("   - GET  /api/v1/export/station-report/:id");
+      logger.info("   - GET  /api/v1/export/regional-comparison");
+      logger.info("   - GET  /api/v1/alerts");
+      logger.info("   - GET  /api/v1/alerts/stats");
     });
   } catch (error) {
     logger.error("Failed to start server:", error);
@@ -81,5 +112,4 @@ process.on("unhandledRejection", (reason, promise) => {
   gracefulShutdown("unhandledRejection");
 });
 
-// Start the server
 startServer();
