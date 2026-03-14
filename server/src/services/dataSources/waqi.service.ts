@@ -154,7 +154,7 @@ export class WAQIService {
       "kharkiv",
       "donetsk",
       "kryvyi-rih",
-      "mariupol",
+      // "mariupol",
       "vinnytsia",
       "mykolaiv",
       "chernihiv",

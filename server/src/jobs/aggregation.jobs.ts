@@ -71,7 +71,7 @@ export class AggregationJob {
         [yesterday, today]
       );
 
-      logger.info(`Regional aggregation: ${result.rowCount} records`);
+      logger.info(`📊 Regional aggregation: ${result.rowCount} records`);
     } catch (error: any) {
       logger.error("Regional aggregation error", { error: error.message });
     }
@@ -114,7 +114,7 @@ export class AggregationJob {
           (station_id, hour, parameter, avg_value, min_value, max_value, avg_aqi, measurement_count)
         SELECT 
           station_id,
-          date_trunc('hour', $1) as hour,
+          date_trunc('hour', measured_at::timestamp) as hour,
           parameter,
           AVG(value) as avg_value,
           MIN(value) as min_value,
@@ -124,7 +124,7 @@ export class AggregationJob {
         FROM measurements
         WHERE measured_at >= $1 
           AND measured_at < $2
-        GROUP BY station_id, date_trunc('hour', $1), parameter
+        GROUP BY station_id, date_trunc('hour', measured_at::timestamp), parameter
         ON CONFLICT (station_id, hour, parameter) 
         DO UPDATE SET
           avg_value = EXCLUDED.avg_value,
@@ -153,7 +153,7 @@ export class AggregationJob {
       ]);
 
       logger.info(
-        `Cleaned old aggregates: ${regionalResult.rowCount} regional, ${hourlyResult.rowCount} hourly`
+        `🗑️ Cleaned old aggregates: ${regionalResult.rowCount} regional, ${hourlyResult.rowCount} hourly`
       );
     } catch (error: any) {
       logger.error("Cleanup error", { error: error.message });
