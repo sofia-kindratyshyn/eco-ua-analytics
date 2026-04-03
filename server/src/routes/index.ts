@@ -9,6 +9,9 @@ import regionsRoutes from "./regions.routes";
 import stationsRoutes from "./stations.routes";
 import airQualityRoutes from "./airQuality.routes";
 import healthRoutes from "./health.routes";
+import analyticsRoutes from "./analytics.routes";
+import exportRoutes from "./export.routes";     
+import alertsRoutes from "./alerts.routes"; 
 
 const router = Router();
 
@@ -22,6 +25,9 @@ router.get("/", (_req, res) => {
       regions: "/api/v1/regions",
       stations: "/api/v1/stations",
       airQuality: "/api/v1/air-quality",
+      analytics: "/api/v1/analytics",
+      export: "/api/v1/export",        
+      alerts: "/api/v1/alerts"
     },
     documentation: "https://github.com/sofia-kindratyshyn/eco-ua-analytics",
   });
@@ -34,6 +40,9 @@ const v1Router = Router();
 v1Router.use("/regions", regionsRoutes);
 v1Router.use("/stations", stationsRoutes);
 v1Router.use("/air-quality", airQualityRoutes);
+v1Router.use("/analytics", analyticsRoutes);
+v1Router.use("/export", exportRoutes);   
+v1Router.use("/alerts", alertsRoutes);
 
 const regionIdParamSchema = {
   params: z.object({

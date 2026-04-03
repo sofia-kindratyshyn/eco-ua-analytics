@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { asyncHandler } from "../middleware/errorHandler";
-import { AlertsController } from "@/controllers/alerts.controllers";
+import { AlertsController } from "../controllers/alerts.controllers";
 
 const router = Router();
 

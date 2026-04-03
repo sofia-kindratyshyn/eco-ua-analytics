@@ -157,6 +157,7 @@ export class OpenAQService {
 
   /**
    * Get latest measurements for a sensor
+   * ✅ FIXED: Handle 404 errors gracefully (OpenAQ API v3 bug)
    */
   static async getSensorLatest(
     sensorId: number
@@ -172,8 +173,14 @@ export class OpenAQService {
       }
       return null;
     } catch (error: any) {
+      if (error.response?.status === 404) {
+        return null;
+      }
+
+      // Only log non-404 errors
       logger.error(`OpenAQ: Error fetching latest for sensor ${sensorId}`, {
         error: error.message,
+        status: error.response?.status,
       });
       return null;
     }
@@ -204,6 +211,10 @@ export class OpenAQService {
 
       return response.data.results;
     } catch (error: any) {
+      if (error.response?.status === 404) {
+        return [];
+      }
+
       logger.error(
         `OpenAQ: Error fetching measurements for sensor ${sensorId}`,
         {
@@ -260,7 +271,7 @@ export class OpenAQService {
       parameter: measurement.parameter.name,
       value: measurement.value,
       unit: measurement.parameter.units,
-      aqi: null, // OpenAQ doesn't provide AQI, calculate separately
+      aqi: null,
       source: "openaq",
     };
   }
@@ -271,10 +282,9 @@ export class OpenAQService {
   private static getRegionIdByCoordinates(lat: number, lng: number): number {
     // Kyiv region (approximate)
     if (lat >= 50.0 && lat <= 51.0 && lng >= 30.0 && lng <= 31.0) {
-      return 1; // Assuming Kyiv is region ID 1
+      return 1;
     }
 
-    // Default to Kyiv region if unsure
     return 1;
   }
 

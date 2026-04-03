@@ -1,4 +1,4 @@
-import { AlertsService } from "@/services/alerts.servise";
+import { AlertsService } from "../services/alerts.servise";
 import { Request, Response } from "express";
 
 export class AlertsController {

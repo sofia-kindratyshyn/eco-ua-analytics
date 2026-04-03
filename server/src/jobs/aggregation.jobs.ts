@@ -102,11 +102,10 @@ export class AggregationJob {
         ON hourly_aggregates(station_id, hour DESC)
       `);
 
-      const lastHour = new Date();
-      lastHour.setHours(lastHour.getHours() - 1, 0, 0, 0);
+      const yesterday = new Date();
+      yesterday.setHours(yesterday.getHours() - 24, 0, 0, 0);
 
-      const thisHour = new Date(lastHour);
-      thisHour.setHours(thisHour.getHours() + 1);
+      const now = new Date();
 
       // Aggregate last hour
       const result = await query(
@@ -133,7 +132,7 @@ export class AggregationJob {
           avg_aqi = EXCLUDED.avg_aqi,
           measurement_count = EXCLUDED.measurement_count,
           updated_at = NOW()`,
-        [lastHour, thisHour]
+          [yesterday, now]
       );
 
       logger.info(`📊 Hourly aggregation: ${result.rowCount} records`);

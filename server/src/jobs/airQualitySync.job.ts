@@ -4,6 +4,7 @@ import { logger } from "../utils/logger";
 import { cache } from "../config/redis";
 import { WAQIService } from "../services/dataSources/waqi.service";
 import { OpenAQService } from "../services/dataSources/openAQ.service";
+import { extractCityName, getCityRegionId } from "../utils/helpers/cityRegionMappping.helper";
 
 export class AirQualitySyncJob {
   private static isRunning = false;
@@ -66,11 +67,13 @@ export class AirQualitySyncJob {
       let totalMeasurements = 0;
 
       for (const [cityName, data] of citiesData.entries()) {
+        const cityExtracted = extractCityName(cityName);
+        const regionId = getCityRegionId(cityExtracted);
         // Upsert station
         const station = await StationModel.upsert({
           external_id: data.data.idx.toString(),
           name: data.data.city.name,
-          region_id: 1, // TODO: Map to correct region
+          region_id: regionId,
           latitude: data.data.city.geo[0],
           longitude: data.data.city.geo[1],
           source: "waqi",

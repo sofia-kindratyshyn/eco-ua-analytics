@@ -1,3 +1,4 @@
+import { CreateMeasurementDto } from "@/types";
 import { logger } from "../../utils/logger";
 import axios from "axios";
 
@@ -211,34 +212,48 @@ export class WAQIService {
   /**
    * Parse WAQI data to our format
    */
-  static parseToMeasurements(data: WAQIResponse, stationId: number) {
-    const measurements: any[] = [];
-    const measuredAt = new Date(data.data.time.s);
-
-    const params = [
-      { key: "pm25", name: "pm25" },
-      { key: "pm10", name: "pm10" },
-      { key: "no2", name: "no2" },
-      { key: "co", name: "co" },
-      { key: "o3", name: "o3" },
-      { key: "so2", name: "so2" },
-    ];
-
-    for (const param of params) {
-      const value = data.data.iaqi[param.key as keyof typeof data.data.iaqi];
-      if (value && typeof value === "object" && "v" in value) {
-        measurements.push({
-          station_id: stationId,
-          measured_at: measuredAt,
-          parameter: param.name,
-          value: value.v,
-          unit: "µg/m³",
-          aqi: data.data.aqi,
-          source: "waqi",
-        });
+  static parseToMeasurements(data: any, stationId: number): CreateMeasurementDto[] {
+    const measurements: CreateMeasurementDto[] = [];
+    const timestamp = new Date();
+   
+    const aqiRaw = data.data.aqi;
+    let aqi: number | null = null;
+    
+    if (typeof aqiRaw === 'number') {
+      aqi = aqiRaw;
+    } else if (typeof aqiRaw === 'string') {
+      const parsed = parseInt(aqiRaw, 10);
+      if (!isNaN(parsed)) {
+        aqi = parsed;
       }
     }
-
+   
+    // PM2.5
+    if (data.data.iaqi?.pm25?.v !== undefined) {
+      measurements.push({
+        station_id: stationId,
+        measured_at: timestamp,
+        parameter: 'pm25',
+        value: data.data.iaqi.pm25.v,
+        unit: 'µg/m³',
+        aqi: aqi,
+        source: 'waqi',
+      });
+    }
+   
+    // PM10
+    if (data.data.iaqi?.pm10?.v !== undefined) {
+      measurements.push({
+        station_id: stationId,
+        measured_at: timestamp,
+        parameter: 'pm10',
+        value: data.data.iaqi.pm10.v,
+        unit: 'µg/m³',
+        aqi: aqi,
+        source: 'waqi',
+      });
+    }
+   
     return measurements;
   }
 }
