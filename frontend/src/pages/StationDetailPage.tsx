@@ -107,7 +107,7 @@ export function StationDetailPage() {
               <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <MapPin className="h-4 w-4" />
-                  {station.latitude.toFixed(4)}, {station.longitude.toFixed(4)}
+                  {Number(station.latitude).toFixed(4)}, {Number(station.longitude).toFixed(4)}
                 </span>
                 {lastUpdate && (
                   <span className="flex items-center gap-1">
@@ -242,7 +242,7 @@ export function StationDetailPage() {
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">Coordinates</dt>
                 <dd style={{ fontWeight: 500 }}>
-                  {station.latitude.toFixed(4)}, {station.longitude.toFixed(4)}
+                  {Number(station.latitude).toFixed(4)}, {Number(station.longitude).toFixed(4)}
                 </dd>
               </div>
               <div className="flex justify-between">

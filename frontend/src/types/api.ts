@@ -67,7 +67,7 @@ export interface Measurement {
   station_id: number;
   measured_at: string;
   parameter: Parameter;
-  value: number;
+  value: string;
   unit: string;
   aqi?: number | null;
   source: string;

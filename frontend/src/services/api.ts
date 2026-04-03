@@ -55,7 +55,7 @@ async function get<T>(path: string, params?: Record<string, unknown>): Promise<T
     const res = await http.get<ApiResponse<T>>(path, { params });
     return res.data.data as T;
   } catch (err) {
-    handleError(err);
+    return handleError(err);
   }
 }
 
