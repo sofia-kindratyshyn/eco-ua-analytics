@@ -1,21 +1,37 @@
 import { Link } from "react-router";
 import { MapPin, Activity, TrendingDown, TrendingUp } from "lucide-react";
-import { MOCK_ALERTS, MOCK_STATIONS } from "../aqi";
 import { StatsCard } from "../components/StatsCard";
 import { AirQualityMap } from "../components/AirQualityApp";
 import { CityCard } from "../components/CityCard";
 import { AlertCard } from "../components/AlertCard";
+import { useStations, useAlerts, useOverallStats } from "../hooks/useApiData";
 
 export function HomePage() {
-  // Calculate stats
-  const totalStations = MOCK_STATIONS.length;
-  const averageAQI = Math.round(
-    MOCK_STATIONS.reduce((sum, s) => sum + s.aqi, 0) / MOCK_STATIONS.length
-  );
-  const bestCity = [...MOCK_STATIONS].sort((a, b) => a.aqi - b.aqi)[0];
-  const worstCity = [...MOCK_STATIONS].sort((a, b) => b.aqi - a.aqi)[0];
+  const { stations, loading: stationsLoading } = useStations();
+  const { alerts } = useAlerts();
+  const { stats, loading: statsLoading } = useOverallStats();
 
-  const featuredStations = MOCK_STATIONS.slice(0, 4);
+  const loading = stationsLoading || statsLoading;
+
+  const totalStations = stats?.activeStations ?? stations.length;
+  const averageAQI =
+    stations.length > 0
+      ? Math.round(stations.reduce((sum, s) => sum + s.aqi, 0) / stations.length)
+      : 0;
+
+  const bestCity = stats?.bestAQI
+    ? { city: stats.bestAQI.station_name, aqi: stats.bestAQI.aqi }
+    : stations.length > 0
+    ? { city: stations[stations.length - 1].city, aqi: stations[stations.length - 1].aqi }
+    : null;
+
+  const worstCity = stats?.worstAQI
+    ? { city: stats.worstAQI.station_name, aqi: stats.worstAQI.aqi }
+    : stations.length > 0
+    ? { city: stations[0].city, aqi: stations[0].aqi }
+    : null;
+
+  const featuredStations = stations.slice(0, 4);
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -53,26 +69,26 @@ export function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
             <StatsCard
               title="Active Stations"
-              value={totalStations}
+              value={loading ? "…" : totalStations}
               subtitle="Monitoring locations"
               icon={<MapPin className="h-4 w-4" />}
             />
             <StatsCard
               title="Average AQI"
-              value={averageAQI}
+              value={loading ? "…" : averageAQI || "—"}
               subtitle="Nationwide"
               icon={<Activity className="h-4 w-4" />}
             />
             <StatsCard
               title="Best Air Quality"
-              value={bestCity.city}
-              subtitle={`AQI: ${bestCity.aqi}`}
+              value={loading ? "…" : bestCity?.city ?? "—"}
+              subtitle={bestCity ? `AQI: ${bestCity.aqi}` : "No data"}
               icon={<TrendingDown className="h-4 w-4 text-green-500" />}
             />
             <StatsCard
               title="Needs Attention"
-              value={worstCity.city}
-              subtitle={`AQI: ${worstCity.aqi}`}
+              value={loading ? "…" : worstCity?.city ?? "—"}
+              subtitle={worstCity ? `AQI: ${worstCity.aqi}` : "No data"}
               icon={<TrendingUp className="h-4 w-4 text-red-500" />}
             />
           </div>
@@ -98,7 +114,7 @@ export function HomePage() {
           </div>
 
           <div className="bg-card rounded-lg border border-border overflow-hidden shadow-sm">
-            <AirQualityMap stations={MOCK_STATIONS} height="500px" />
+            <AirQualityMap stations={stations} height="500px" />
           </div>
         </div>
       </section>
@@ -112,11 +128,15 @@ export function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {featuredStations.map((station) => (
-              <CityCard key={station.id} station={station} />
-            ))}
-          </div>
+          {stationsLoading ? (
+            <div className="text-muted-foreground text-sm">Loading stations…</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {featuredStations.map((station) => (
+                <CityCard key={station.id} station={station} />
+              ))}
+            </div>
+          )}
 
           <div className="mt-6 text-center">
             <Link
@@ -130,7 +150,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {MOCK_ALERTS.length > 0 && (
+      {alerts.length > 0 && (
         <section className="py-12 md:py-16">
           <div className="container mx-auto px-4">
             <div className="mb-6 flex items-center justify-between">
@@ -150,7 +170,7 @@ export function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl">
-              {MOCK_ALERTS.map((alert) => (
+              {alerts.slice(0, 4).map((alert) => (
                 <AlertCard key={alert.id} alert={alert} />
               ))}
             </div>

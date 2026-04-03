@@ -1,6 +1,6 @@
 import { AlertTriangle, AlertCircle, AlertOctagon } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import type { Alert } from "../aqi";
+import type { UIAlert as Alert } from "../types/ui";
 
 interface AlertCardProps {
   alert: Alert;

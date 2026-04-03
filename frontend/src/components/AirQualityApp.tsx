@@ -1,7 +1,8 @@
 import { Link } from "react-router";
 import { AQIBadge } from "./AQIBadge";
 import { MapPin } from "lucide-react";
-import { getAQIColor, type Station } from "../aqi";
+import { getAQIColor } from "../aqi";
+import type { UIStation as Station } from "../types/ui";
 
 interface AirQualityMapProps {
   stations: Station[];

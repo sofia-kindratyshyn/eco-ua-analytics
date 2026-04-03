@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
-import type { Station } from "../aqi";
+import type { UIStation as Station } from "../types/ui";
 import { AQIBadge } from "./AQIBadge";
 
 interface CityCardProps {

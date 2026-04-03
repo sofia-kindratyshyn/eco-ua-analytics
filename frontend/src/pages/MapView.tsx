@@ -1,14 +1,17 @@
 import { Link } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import L from "leaflet";
-import { getAqiLevel, stations } from "../data/mockData";
+import { getAqiLevel } from "../data/mockData";
 import AqiLegend from "../components/AqiLegendForMap";
+import { useStations } from "../hooks/useApiData";
 
 const ukraineCenter: [number, number] = [48.9, 31.2];
 
 const MapView = () => {
+  const { stations } = useStations();
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const markersRef = useRef<L.CircleMarker[]>([]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -20,6 +23,20 @@ const MapView = () => {
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
+
+    return () => {
+      map.remove();
+      mapRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    // Remove old markers
+    markersRef.current.forEach((m) => m.remove());
+    markersRef.current = [];
 
     stations.forEach((station) => {
       const level = getAqiLevel(station.aqi);
@@ -33,12 +50,8 @@ const MapView = () => {
 
       marker.bindPopup(`
         <div style="min-width:200px;padding:4px;">
-          <h4 style="font-weight:bold;font-size:14px;margin:0;">${
-            station.name
-          }</h4>
-          <p style="font-size:12px;color:#888;margin:2px 0 8px;">${
-            station.city
-          }, ${station.region}</p>
+          <h4 style="font-weight:bold;font-size:14px;margin:0;">${station.name}</h4>
+          <p style="font-size:12px;color:#888;margin:2px 0 8px;">${station.region}</p>
           <div style="display:flex;align-items:center;gap:12px;">
             <div style="background:${level.color};color:${
         station.aqi <= 100 ? "#333" : "#fff"
@@ -46,27 +59,17 @@ const MapView = () => {
               ${station.aqi}
             </div>
             <div style="font-size:12px;">
-              <p style="margin:0;"><strong>PM2.5:</strong> ${
-                station.pm25
-              } µg/m³</p>
-              <p style="margin:0;"><strong>PM10:</strong> ${
-                station.pm10
-              } µg/m³</p>
-              <p style="margin:0;color:#999;">${station.lastUpdated}</p>
+              <p style="margin:0;"><strong>PM2.5:</strong> ${station.pm25} µg/m³</p>
+              <p style="margin:0;"><strong>PM10:</strong> ${station.pm10} µg/m³</p>
             </div>
           </div>
-          <a href="/station/${
-            station.id
-          }" style="display:block;text-align:center;margin-top:8px;font-size:12px;color:#2E75B6;">View Details →</a>
+          <a href="/station/${station.id}" style="display:block;text-align:center;margin-top:8px;font-size:12px;color:#2E75B6;">View Details →</a>
         </div>
       `);
-    });
 
-    return () => {
-      map.remove();
-      mapRef.current = null;
-    };
-  }, []);
+      markersRef.current.push(marker);
+    });
+  }, [stations]);
 
   return (
     <div className="relative flex h-[calc(100vh-4rem)] flex-col">

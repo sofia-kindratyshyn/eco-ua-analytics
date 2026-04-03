@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { Bell, Filter } from "lucide-react";
-import { MOCK_ALERTS } from "../aqi";
 import { AlertCard } from "../components/AlertCard";
+import { useAlerts } from "../hooks/useApiData";
 
 export function AlertsPage() {
+  const { alerts, loading, error } = useAlerts();
   const [filterSeverity, setFilterSeverity] = useState<string>("all");
 
   const filteredAlerts =
     filterSeverity === "all"
-      ? MOCK_ALERTS
-      : MOCK_ALERTS.filter((alert) => alert.severity === filterSeverity);
+      ? alerts
+      : alerts.filter((alert) => alert.severity === filterSeverity);
 
-  const activeAlerts = MOCK_ALERTS.length;
+  const activeAlerts = alerts.length;
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -30,11 +31,9 @@ export function AlertsPage() {
                 <Bell className="h-5 w-5 text-red-600" />
               </div>
               <div>
-                <div className="text-sm text-muted-foreground">
-                  Active Alerts
-                </div>
+                <div className="text-sm text-muted-foreground">Active Alerts</div>
                 <div className="text-2xl" style={{ fontWeight: 600 }}>
-                  {activeAlerts}
+                  {loading ? "…" : activeAlerts}
                 </div>
               </div>
             </div>
@@ -48,7 +47,7 @@ export function AlertsPage() {
               <div>
                 <div className="text-sm text-muted-foreground">Warnings</div>
                 <div className="text-2xl" style={{ fontWeight: 600 }}>
-                  {MOCK_ALERTS.filter((a) => a.severity === "warning").length}
+                  {loading ? "…" : alerts.filter((a) => a.severity === "warning").length}
                 </div>
               </div>
             </div>
@@ -62,7 +61,7 @@ export function AlertsPage() {
               <div>
                 <div className="text-sm text-muted-foreground">Critical</div>
                 <div className="text-2xl" style={{ fontWeight: 600 }}>
-                  {MOCK_ALERTS.filter((a) => a.severity === "critical").length}
+                  {loading ? "…" : alerts.filter((a) => a.severity === "critical").length}
                 </div>
               </div>
             </div>
@@ -125,7 +124,15 @@ export function AlertsPage() {
           </aside>
 
           <div className="lg:col-span-3">
-            {filteredAlerts.length === 0 ? (
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 text-sm text-red-800">
+                Failed to load alerts: {error}
+              </div>
+            )}
+
+            {loading ? (
+              <div className="text-muted-foreground text-sm">Loading alerts…</div>
+            ) : filteredAlerts.length === 0 ? (
               <div className="bg-card rounded-lg border border-border p-12 text-center">
                 <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg mb-2">No alerts found</h3>
