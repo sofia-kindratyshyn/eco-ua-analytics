@@ -1,3 +1,4 @@
+import { logger } from "../utils/logger";
 import { query } from "../config/database";
 import { Measurement, CreateMeasurementDto, Parameter } from "../types";
 
@@ -27,39 +28,62 @@ export class MeasurementModel {
   /**
    * Bulk create measurements
    */
-  static async createMany(data: CreateMeasurementDto[]): Promise<number> {
-    if (data.length === 0) return 0;
-
-    const values: any[] = [];
-    const valuePlaceholders: string[] = [];
-
-    data.forEach((item, index) => {
-      const offset = index * 7;
-      valuePlaceholders.push(
-        `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${
-          offset + 5
-        }, $${offset + 6}, $${offset + 7})`
-      );
-      values.push(
-        item.station_id,
-        item.measured_at,
-        item.parameter,
-        item.value,
-        item.unit,
-        item.aqi,
-        item.source
-      );
-    });
-
-    const result = await query(
-      `INSERT INTO measurements 
-       (station_id, measured_at, parameter, value, unit, aqi, source)
-       VALUES ${valuePlaceholders.join(", ")}
-       ON CONFLICT (station_id, measured_at, parameter) DO NOTHING`,
-      values
-    );
-
-    return result.rowCount ?? 0;
+  static async createMany(measurements: CreateMeasurementDto[]): Promise<number> {
+    if (!measurements || measurements.length === 0) {
+      logger.debug('No measurements to insert');
+      return 0;
+    }
+ 
+    try {
+      // Build VALUES clause: ($1, $2, ...), ($8, $9, ...), ...
+      const valuesClauses: string[] = [];
+      const params: any[] = [];
+      
+      measurements.forEach((m, index) => {
+        const base = index * 7;
+        valuesClauses.push(
+          `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6}, $${base + 7})`
+        );
+        
+        // Add parameters in order
+        params.push(
+          m.station_id,
+          m.measured_at,
+          m.parameter,
+          m.value,
+          m.unit,
+          m.aqi,
+          m.source
+        );
+      });
+ 
+      const sql = `
+        INSERT INTO measurements 
+          (station_id, measured_at, parameter, value, unit, aqi, source)
+        VALUES ${valuesClauses.join(', ')}
+        ON CONFLICT (station_id, measured_at, parameter) 
+        DO UPDATE SET
+          value = EXCLUDED.value,
+          aqi = EXCLUDED.aqi,
+          unit = EXCLUDED.unit
+      `;
+ 
+      logger.debug(`Inserting ${measurements.length} measurements`);
+      
+      const result = await query(sql, params);
+      
+      logger.debug(`Inserted/updated ${result.rowCount} measurements`);
+      
+      return result.rowCount || 0;
+      
+    } catch (error: any) {
+      logger.error('Error creating measurements', { 
+        error: error.message,
+        count: measurements.length,
+        firstMeasurement: measurements[0]
+      });
+      throw error;
+    }
   }
 
   /**

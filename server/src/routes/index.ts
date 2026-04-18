@@ -9,12 +9,13 @@ import regionsRoutes from "./regions.routes";
 import stationsRoutes from "./stations.routes";
 import airQualityRoutes from "./airQuality.routes";
 import healthRoutes from "./health.routes";
+import analyticsRoutes from "./analytics.routes";
+import exportRoutes from "./export.routes";     
+import alertsRoutes from "./alerts.routes"; 
 
 const router = Router();
 
-// API Info
 router.get("/", (_req, res) => {
-  // Prefix with underscore
   res.json({
     success: true,
     message: "UA Environment Dashboard API",
@@ -24,22 +25,25 @@ router.get("/", (_req, res) => {
       regions: "/api/v1/regions",
       stations: "/api/v1/stations",
       airQuality: "/api/v1/air-quality",
+      analytics: "/api/v1/analytics",
+      export: "/api/v1/export",        
+      alerts: "/api/v1/alerts"
     },
     documentation: "https://github.com/sofia-kindratyshyn/eco-ua-analytics",
   });
 });
 
-// Health routes (no versioning, no /api prefix)
 router.use("/health", healthRoutes);
 
-// API v1 routes
 const v1Router = Router();
 
 v1Router.use("/regions", regionsRoutes);
 v1Router.use("/stations", stationsRoutes);
 v1Router.use("/air-quality", airQualityRoutes);
+v1Router.use("/analytics", analyticsRoutes);
+v1Router.use("/export", exportRoutes);   
+v1Router.use("/alerts", alertsRoutes);
 
-// Special nested routes (stations by region, air quality by station/region)
 const regionIdParamSchema = {
   params: z.object({
     regionId: z.string().regex(/^\d+$/).transform(Number),
@@ -58,28 +62,24 @@ const latestQuerySchema = {
   }),
 };
 
-// GET /api/v1/regions/:regionId/stations
 v1Router.get(
   "/regions/:regionId/stations",
   validateRequest(regionIdParamSchema),
   asyncHandler(StationsController.getByRegion)
 );
 
-// GET /api/v1/regions/:regionId/air-quality/latest
 v1Router.get(
   "/regions/:regionId/air-quality/latest",
   validateRequest({ ...regionIdParamSchema, ...latestQuerySchema }),
   asyncHandler(AirQualityController.getLatestByRegion)
 );
 
-// GET /api/v1/stations/:stationId/air-quality/latest
 v1Router.get(
   "/stations/:stationId/air-quality/latest",
   validateRequest({ ...stationIdParamSchema, ...latestQuerySchema }),
   asyncHandler(AirQualityController.getLatestByStation)
 );
 
-// Mount v1 routes
 router.use("/api/v1", v1Router);
 
 export default router;
