@@ -58,7 +58,7 @@ export function HomePage() {
               </Link>
               <Link
                 to="/alerts"
-                className="px-6 py-3 rounded-md border border-border bg-white transition-shadow hover:shadow-md"
+                className="px-6 py-3 rounded-md border border-border bg-background text-foreground transition-shadow hover:shadow-md"
                 style={{ fontWeight: 500 }}
               >
                 View Alerts
@@ -119,7 +119,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="py-12 md:py-16 bg-white">
+      <section className="py-12 md:py-16 bg-card">
         <div className="container mx-auto px-4">
           <div className="mb-6">
             <h2 className="text-2xl md:text-3xl mb-2">Major Cities</h2>

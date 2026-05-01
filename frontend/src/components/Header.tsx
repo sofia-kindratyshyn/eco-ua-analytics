@@ -1,10 +1,12 @@
 import { Link, useLocation } from "react-router";
-import { Menu, Search, Wind } from "lucide-react";
+import { Menu, Moon, Sun, Wind } from "lucide-react";
 import { useState } from "react";
+import { useTheme } from "@/hooks/useTheme";
 
 export function Header() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isDark, toggle } = useTheme();
 
   const isActive = (path: string) => {
     if (path === "/" && location.pathname === "/") return true;
@@ -20,7 +22,7 @@ export function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
@@ -59,9 +61,10 @@ export function Header() {
           <div className="flex items-center gap-3">
             <button
               className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-muted transition-colors"
-              aria-label="Search"
+              aria-label="Toggle theme"
+              onClick={toggle}
             >
-              <Search className="h-4 w-4" />
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
 
             <button

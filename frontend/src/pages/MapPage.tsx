@@ -64,14 +64,14 @@ export function MapPage() {
 
             <AQILegend />
 
-            <div className="bg-blue-50 rounded-lg border border-blue-200 p-4">
+            <div className="bg-blue-50 dark:bg-blue-950/40 rounded-lg border border-blue-200 dark:border-blue-800 p-4">
               <h3
-                className="text-sm text-blue-900 mb-2"
+                className="text-sm text-blue-900 dark:text-blue-200 mb-2"
                 style={{ fontWeight: 600 }}
               >
                 About the Data
               </h3>
-              <p className="text-xs text-blue-800">
+              <p className="text-xs text-blue-800 dark:text-blue-300">
                 Air quality data is updated every 30 minutes from monitoring
                 stations across Ukraine. Click on any marker for detailed
                 pollutant measurements.

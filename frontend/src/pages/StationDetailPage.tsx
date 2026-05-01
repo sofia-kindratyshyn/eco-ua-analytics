@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router";
-import { ArrowLeft, Download, Share2, MapPin, Clock } from "lucide-react";
+import { ArrowLeft, Check, Download, Share2, MapPin, Clock } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -19,9 +20,20 @@ import {
   getOverallAqi,
 } from "../hooks/useApiData";
 
+function downloadCSV(filename: string, content: string) {
+  const blob = new Blob(["\uFEFF" + content], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export function StationDetailPage() {
   const { id } = useParams();
   const { station, history, loading, error } = useStationDetail(id);
+  const [copied, setCopied] = useState(false);
 
   if (loading) {
     return (
@@ -44,50 +56,64 @@ export function StationDetailPage() {
     );
   }
 
-  const measurements = station.latest_measurements;
+  // Capture as non-null const so closures don't lose the narrowing
+  const s = station;
+
+  const measurements = s.latest_measurements;
   const aqi = getOverallAqi(measurements);
   const aqiLevel = getAQILevel(aqi);
 
   const pollutants = [
-    {
-      name: "PM2.5",
-      value: getMeasurementValue(measurements, "pm25"),
-      unit: "µg/m³",
-      color: "#3b82f6",
-    },
-    {
-      name: "PM10",
-      value: getMeasurementValue(measurements, "pm10"),
-      unit: "µg/m³",
-      color: "#8b5cf6",
-    },
-    {
-      name: "NO₂",
-      value: getMeasurementValue(measurements, "no2"),
-      unit: "ppb",
-      color: "#f59e0b",
-    },
-    {
-      name: "CO",
-      value: getMeasurementValue(measurements, "co"),
-      unit: "ppm",
-      color: "#ef4444",
-    },
-    {
-      name: "O₃",
-      value: getMeasurementValue(measurements, "o3"),
-      unit: "ppb",
-      color: "#10b981",
-    },
-    {
-      name: "SO₂",
-      value: getMeasurementValue(measurements, "so2"),
-      unit: "ppb",
-      color: "#6366f1",
-    },
+    { name: "PM2.5", value: getMeasurementValue(measurements, "pm25"), unit: "µg/m³", color: "#3b82f6" },
+    { name: "PM10",  value: getMeasurementValue(measurements, "pm10"), unit: "µg/m³", color: "#8b5cf6" },
+    { name: "NO₂",  value: getMeasurementValue(measurements, "no2"),  unit: "µg/m³", color: "#f59e0b" },
+    { name: "CO",   value: getMeasurementValue(measurements, "co"),   unit: "ppm",   color: "#ef4444" },
+    { name: "O₃",   value: getMeasurementValue(measurements, "o3"),   unit: "µg/m³", color: "#10b981" },
+    { name: "SO₂",  value: getMeasurementValue(measurements, "so2"),  unit: "µg/m³", color: "#6366f1" },
   ];
 
-  const lastUpdate = station.last_measured_at;
+  const lastUpdate = s.last_measured_at;
+
+  function handleExport() {
+    const rows: (string | number)[][] = [
+      ["Station Report", s.name],
+      ["Generated", new Date().toISOString()],
+      [],
+      ["Station Info"],
+      ["ID", s.id],
+      ["Source", s.source],
+      ["Latitude", s.latitude],
+      ["Longitude", s.longitude],
+      ["Status", s.is_active ? "Active" : "Inactive"],
+      [],
+      ["Current Measurements"],
+      ["AQI", aqi],
+      ["PM2.5 (µg/m³)", getMeasurementValue(measurements, "pm25") ?? ""],
+      ["PM10 (µg/m³)", getMeasurementValue(measurements, "pm10") ?? ""],
+      ["NO2 (µg/m³)", getMeasurementValue(measurements, "no2") ?? ""],
+      ["CO (ppm)", getMeasurementValue(measurements, "co") ?? ""],
+      ["O3 (µg/m³)", getMeasurementValue(measurements, "o3") ?? ""],
+      ["SO2 (µg/m³)", getMeasurementValue(measurements, "so2") ?? ""],
+    ];
+    if (history.length > 0) {
+      rows.push([], ["7-Day History"], ["Date", "AQI", "PM2.5"]);
+      history.forEach((h) => rows.push([h.date, h.aqi, h.pm25]));
+    }
+    const csv = rows.map((r) => r.join(",")).join("\n");
+    downloadCSV(`station-${s.id}-report.csv`, csv);
+  }
+
+  async function handleShare() {
+    const url = window.location.href;
+    const title = `Air Quality — ${s.name}`;
+    if (navigator.share) {
+      try { await navigator.share({ title, url }); } catch { /* user cancelled */ }
+      return;
+    }
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -103,11 +129,11 @@ export function StationDetailPage() {
 
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div>
-              <h1 className="text-3xl mb-2">{station.name}</h1>
+              <h1 className="text-3xl mb-2">{s.name}</h1>
               <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <MapPin className="h-4 w-4" />
-                  {Number(station.latitude).toFixed(4)}, {Number(station.longitude).toFixed(4)}
+                  {Number(s.latitude).toFixed(4)}, {Number(s.longitude).toFixed(4)}
                 </span>
                 {lastUpdate && (
                   <span className="flex items-center gap-1">
@@ -122,11 +148,17 @@ export function StationDetailPage() {
             </div>
 
             <div className="flex gap-2">
-              <button className="px-4 py-2 text-sm border border-border rounded-md hover:bg-muted transition-colors flex items-center gap-2">
-                <Share2 className="h-4 w-4" />
-                Share
+              <button
+                onClick={handleShare}
+                className="px-4 py-2 text-sm border border-border rounded-md hover:bg-muted transition-colors flex items-center gap-2"
+              >
+                {copied ? <Check className="h-4 w-4 text-green-500" /> : <Share2 className="h-4 w-4" />}
+                {copied ? "Copied!" : "Share"}
               </button>
-              <button className="px-4 py-2 text-sm border border-border rounded-md hover:bg-muted transition-colors flex items-center gap-2">
+              <button
+                onClick={handleExport}
+                className="px-4 py-2 text-sm border border-border rounded-md hover:bg-muted transition-colors flex items-center gap-2"
+              >
                 <Download className="h-4 w-4" />
                 Export
               </button>
@@ -140,7 +172,7 @@ export function StationDetailPage() {
           </div>
           <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
             <div className="text-6xl" style={{ fontWeight: 700 }}>
-              {aqi || "—"}
+              {aqi > 0 ? aqi : "—"}
             </div>
             {aqi > 0 && <AQIBadge aqi={aqi} size="xl" />}
           </div>
@@ -166,7 +198,7 @@ export function StationDetailPage() {
                   className="text-2xl mb-1"
                   style={{ fontWeight: 600, color: pollutant.color }}
                 >
-                  {pollutant.value || "—"}
+                  {pollutant.value != null ? pollutant.value : "—"}
                 </div>
                 <div className="text-sm text-muted-foreground">
                   {pollutant.name}
@@ -187,7 +219,7 @@ export function StationDetailPage() {
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={history}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis
                     dataKey="date"
                     tick={{ fontSize: 12 }}
@@ -199,9 +231,10 @@ export function StationDetailPage() {
                   <YAxis tick={{ fontSize: 12 }} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "white",
-                      border: "1px solid #e5e7eb",
+                      backgroundColor: "var(--card)",
+                      border: "1px solid var(--border)",
                       borderRadius: "8px",
+                      color: "var(--card-foreground)",
                     }}
                   />
                   <Legend />
@@ -233,16 +266,16 @@ export function StationDetailPage() {
             <dl className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">Station ID</dt>
-                <dd style={{ fontWeight: 500 }}>{station.id}</dd>
+                <dd style={{ fontWeight: 500 }}>{s.id}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">Source</dt>
-                <dd style={{ fontWeight: 500 }}>{station.source}</dd>
+                <dd style={{ fontWeight: 500 }}>{s.source}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">Coordinates</dt>
                 <dd style={{ fontWeight: 500 }}>
-                  {Number(station.latitude).toFixed(4)}, {Number(station.longitude).toFixed(4)}
+                  {Number(s.latitude).toFixed(4)}, {Number(s.longitude).toFixed(4)}
                 </dd>
               </div>
               <div className="flex justify-between">
@@ -250,18 +283,18 @@ export function StationDetailPage() {
                 <dd>
                   <span className="inline-flex items-center gap-1 text-green-600">
                     <span className="w-2 h-2 bg-green-600 rounded-full"></span>
-                    {station.is_active ? "Active" : "Inactive"}
+                    {s.is_active ? "Active" : "Inactive"}
                   </span>
                 </dd>
               </div>
             </dl>
           </div>
 
-          <div className="bg-blue-50 rounded-lg border border-blue-200 p-6">
-            <h3 className="text-lg text-blue-900 mb-3">
+          <div className="bg-blue-50 dark:bg-blue-950/40 rounded-lg border border-blue-200 dark:border-blue-800 p-6">
+            <h3 className="text-lg text-blue-900 dark:text-blue-200 mb-3">
               About Air Quality Index
             </h3>
-            <p className="text-sm text-blue-800">
+            <p className="text-sm text-blue-800 dark:text-blue-300">
               The AQI is calculated based on the concentration of major air
               pollutants including particulate matter (PM2.5, PM10), nitrogen
               dioxide (NO₂), carbon monoxide (CO), ozone (O₃), and sulfur

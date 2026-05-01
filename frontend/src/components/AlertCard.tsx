@@ -10,24 +10,24 @@ export function AlertCard({ alert }: AlertCardProps) {
   const severityConfig = {
     warning: {
       icon: AlertTriangle,
-      bg: "bg-yellow-50",
-      border: "border-yellow-200",
-      iconColor: "text-yellow-600",
-      textColor: "text-yellow-900",
+      bg: "bg-yellow-50 dark:bg-yellow-900/20",
+      border: "border-yellow-200 dark:border-yellow-700",
+      iconColor: "text-yellow-600 dark:text-yellow-400",
+      textColor: "text-yellow-900 dark:text-yellow-100",
     },
     danger: {
       icon: AlertCircle,
-      bg: "bg-orange-50",
-      border: "border-orange-200",
-      iconColor: "text-orange-600",
-      textColor: "text-orange-900",
+      bg: "bg-orange-50 dark:bg-orange-900/20",
+      border: "border-orange-200 dark:border-orange-700",
+      iconColor: "text-orange-600 dark:text-orange-400",
+      textColor: "text-orange-900 dark:text-orange-100",
     },
     critical: {
       icon: AlertOctagon,
-      bg: "bg-red-50",
-      border: "border-red-200",
-      iconColor: "text-red-600",
-      textColor: "text-red-900",
+      bg: "bg-red-50 dark:bg-red-900/20",
+      border: "border-red-200 dark:border-red-700",
+      iconColor: "text-red-600 dark:text-red-400",
+      textColor: "text-red-900 dark:text-red-100",
     },
   };
 
@@ -57,7 +57,7 @@ export function AlertCard({ alert }: AlertCardProps) {
           </p>
           <div className="mt-2">
             <span
-              className={`text-xs px-2 py-0.5 rounded ${config.iconColor} bg-white/50`}
+              className={`text-xs px-2 py-0.5 rounded ${config.iconColor} bg-black/5 dark:bg-white/10`}
             >
               AQI: {alert.aqi}
             </span>

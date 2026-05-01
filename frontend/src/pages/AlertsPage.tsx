@@ -27,8 +27,8 @@ export function AlertsPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="bg-card rounded-lg border border-border p-6">
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-red-100 rounded-lg">
-                <Bell className="h-5 w-5 text-red-600" />
+              <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                <Bell className="h-5 w-5 text-red-600 dark:text-red-400" />
               </div>
               <div>
                 <div className="text-sm text-muted-foreground">Active Alerts</div>
@@ -41,8 +41,8 @@ export function AlertsPage() {
 
           <div className="bg-card rounded-lg border border-border p-6">
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <Bell className="h-5 w-5 text-yellow-600" />
+              <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+                <Bell className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
               </div>
               <div>
                 <div className="text-sm text-muted-foreground">Warnings</div>
@@ -55,8 +55,8 @@ export function AlertsPage() {
 
           <div className="bg-card rounded-lg border border-border p-6">
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <Bell className="h-5 w-5 text-orange-600" />
+              <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                <Bell className="h-5 w-5 text-orange-600 dark:text-orange-400" />
               </div>
               <div>
                 <div className="text-sm text-muted-foreground">Critical</div>
@@ -125,7 +125,7 @@ export function AlertsPage() {
 
           <div className="lg:col-span-3">
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 text-sm text-red-800">
+              <div className="bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4 text-sm text-red-800 dark:text-red-300">
                 Failed to load alerts: {error}
               </div>
             )}
@@ -148,9 +148,9 @@ export function AlertsPage() {
               </div>
             )}
 
-            <div className="mt-6 bg-blue-50 rounded-lg border border-blue-200 p-6">
-              <h3 className="text-lg text-blue-900 mb-3">Health Guidelines</h3>
-              <div className="space-y-3 text-sm text-blue-800">
+            <div className="mt-6 bg-blue-50 dark:bg-blue-950/40 rounded-lg border border-blue-200 dark:border-blue-800 p-6">
+              <h3 className="text-lg text-blue-900 dark:text-blue-200 mb-3">Health Guidelines</h3>
+              <div className="space-y-3 text-sm text-blue-800 dark:text-blue-300">
                 <div>
                   <span style={{ fontWeight: 600 }}>For Sensitive Groups:</span>
                   <p>

@@ -9,7 +9,17 @@ import {
   Cell,
 } from "recharts";
 import { Download } from "lucide-react";
-import { getAQIColor } from "../aqi";
+import { getAQIColor, getAQILabel } from "../aqi";
+
+function downloadCSV(filename: string, content: string) {
+  const blob = new Blob(["\uFEFF" + content], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 import { CityCard } from "../components/CityCard";
 import { useStations } from "../hooks/useApiData";
 
@@ -17,6 +27,25 @@ export function AnalyticsPage() {
   const { stations, loading, error } = useStations();
 
   const sortedStations = [...stations].sort((a, b) => b.aqi - a.aqi);
+
+  function handleDownload() {
+    const headers = ["City", "Region", "AQI", "Status", "PM2.5 (µg/m³)", "PM10 (µg/m³)", "NO2 (µg/m³)", "O3 (µg/m³)", "SO2 (µg/m³)", "CO (ppm)"];
+    const rows = sortedStations.map((s) => [
+      `"${s.city}"`,
+      `"${s.region}"`,
+      s.aqi,
+      `"${getAQILabel(s.aqi)}"`,
+      s.pm25,
+      s.pm10,
+      s.no2,
+      s.o3,
+      s.so2,
+      s.co,
+    ]);
+    const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
+    const date = new Date().toISOString().split("T")[0];
+    downloadCSV(`air-quality-report-${date}.csv`, csv);
+  }
 
   const chartData = sortedStations.map((station) => ({
     name: station.city,
@@ -56,7 +85,11 @@ export function AnalyticsPage() {
                 Ukrainian cities
               </p>
             </div>
-            <button className="px-4 py-2 text-sm border border-border rounded-md hover:bg-muted transition-colors flex items-center gap-2 w-fit">
+            <button
+              onClick={handleDownload}
+              disabled={loading || stations.length === 0}
+              className="px-4 py-2 text-sm border border-border rounded-md hover:bg-muted transition-colors flex items-center gap-2 w-fit disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <Download className="h-4 w-4" />
               Download Report
             </button>
@@ -64,7 +97,7 @@ export function AnalyticsPage() {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-sm text-red-800">
+          <div className="bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6 text-sm text-red-800 dark:text-red-300">
             Failed to load data: {error}
           </div>
         )}
@@ -83,7 +116,7 @@ export function AnalyticsPage() {
                 <div className="h-96">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                       <XAxis
                         dataKey="name"
                         tick={{ fontSize: 12 }}
@@ -97,9 +130,10 @@ export function AnalyticsPage() {
                       />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: "white",
-                          border: "1px solid #e5e7eb",
+                          backgroundColor: "var(--card)",
+                          border: "1px solid var(--border)",
                           borderRadius: "8px",
+                          color: "var(--card-foreground)",
                         }}
                       />
                       <Bar dataKey="aqi" name="Air Quality Index">
@@ -184,7 +218,7 @@ export function AnalyticsPage() {
                 <div className="h-96">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                       <XAxis
                         dataKey="name"
                         tick={{ fontSize: 12 }}
@@ -202,9 +236,10 @@ export function AnalyticsPage() {
                       />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: "white",
-                          border: "1px solid #e5e7eb",
+                          backgroundColor: "var(--card)",
+                          border: "1px solid var(--border)",
                           borderRadius: "8px",
+                          color: "var(--card-foreground)",
                         }}
                       />
                       <Bar dataKey="pm25" fill="#34A853" name="PM2.5" />

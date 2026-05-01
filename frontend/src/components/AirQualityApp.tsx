@@ -24,7 +24,7 @@ export function AirQualityMap({
         borderRadius: "0.5rem",
         overflow: "hidden",
       }}
-      className="bg-linear-to-br from-blue-50 to-green-50"
+      className="bg-linear-to-br from-blue-50 to-green-50 dark:from-slate-900 dark:to-slate-800"
     >
       {/* Map placeholder with station markers */}
       <div className="relative w-full h-full p-8 overflow-auto">
@@ -37,7 +37,7 @@ export function AirQualityMap({
             return (
               <div
                 key={station.id}
-                className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 p-4 border-l-4"
+                className="bg-card rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 p-4 border-l-4"
                 style={{ borderLeftColor: color }}
               >
                 <div className="flex items-start justify-between mb-3">
@@ -71,19 +71,19 @@ export function AirQualityMap({
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 mb-3 text-xs">
-                  <div className="bg-gray-50 rounded p-2">
+                  <div className="bg-muted rounded p-2">
                     <div className="text-muted-foreground">PM2.5</div>
                     <div style={{ fontWeight: 600 }}>{station.pm25} µg/m³</div>
                   </div>
-                  <div className="bg-gray-50 rounded p-2">
+                  <div className="bg-muted rounded p-2">
                     <div className="text-muted-foreground">PM10</div>
                     <div style={{ fontWeight: 600 }}>{station.pm10} µg/m³</div>
                   </div>
-                  <div className="bg-gray-50 rounded p-2">
+                  <div className="bg-muted rounded p-2">
                     <div className="text-muted-foreground">NO₂</div>
                     <div style={{ fontWeight: 600 }}>{station.no2} µg/m³</div>
                   </div>
-                  <div className="bg-gray-50 rounded p-2">
+                  <div className="bg-muted rounded p-2">
                     <div className="text-muted-foreground">O₃</div>
                     <div style={{ fontWeight: 600 }}>{station.o3} µg/m³</div>
                   </div>

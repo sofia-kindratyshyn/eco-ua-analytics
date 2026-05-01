@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { analyticsApi, alertsApi, stationsApi, regionsApi } from "../services/api";
+import { analyticsApi, alertsApi, stationsApi, regionsApi, airQualityApi } from "../services/api";
 import type { AlertSeverity, Parameter, TopPollutedStation } from "../types/api";
 import type { UIStation, UIAlert } from "../types/ui";
 
@@ -196,8 +196,28 @@ export function useStationDetail(id: string | undefined) {
       stationsApi.getById(numId),
       analyticsApi.getHistory(numId, "pm25", 7),
     ])
-      .then(([stationData, historyData]) => {
-        setStation(stationData as unknown as StationDetail);
+      .then(async ([stationData, historyData]) => {
+        let detail = stationData as unknown as StationDetail;
+
+        // Fallback: if station endpoint returned no measurements, fetch them directly
+        if (!detail.latest_measurements?.length) {
+          try {
+            const raw = await airQualityApi.getLatestByStation(numId);
+            detail = {
+              ...detail,
+              latest_measurements: raw.map((m) => ({
+                parameter: m.parameter,
+                value: parseFloat(m.value as unknown as string),
+                unit: m.unit,
+                aqi: m.aqi ?? null,
+              })),
+            };
+          } catch {
+            // keep empty measurements, page shows "—"
+          }
+        }
+
+        setStation(detail);
         setHistory(
           historyData.map((h) => ({
             date: h.time,
@@ -216,13 +236,15 @@ export function useStationDetail(id: string | undefined) {
 export function getMeasurementValue(
   measurements: LatestMeasurement[] | null | undefined,
   param: Parameter
-): number {
-  return measurements?.find((m) => m.parameter === param)?.value ?? 0;
+): number | null {
+  const m = measurements?.find((m) => m.parameter === param);
+  return m != null ? m.value : null;
 }
 
 export function getOverallAqi(
   measurements: LatestMeasurement[] | null | undefined
 ): number {
   if (!measurements?.length) return 0;
-  return Math.round(Math.max(...measurements.map((m) => m.aqi ?? 0)));
+  const aqis = measurements.map((m) => m.aqi ?? 0).filter((v) => v > 0);
+  return aqis.length ? Math.round(Math.max(...aqis)) : 0;
 }
