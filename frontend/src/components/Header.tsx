@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router";
 import { Menu, Moon, Sun, Wind } from "lucide-react";
 import { useState } from "react";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "../hooks/useTheme";
 
 export function Header() {
   const location = useLocation();
@@ -43,7 +43,10 @@ export function Header() {
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
+          <nav
+            className="hidden md:flex items-center gap-6"
+            aria-label="Main navigation"
+          >
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -65,7 +68,11 @@ export function Header() {
               aria-label="Toggle theme"
               onClick={toggle}
             >
-              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {isDark ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
             </button>
 
             <button
@@ -79,7 +86,10 @@ export function Header() {
         </div>
 
         {mobileMenuOpen && (
-          <nav className="flex flex-col gap-2 py-4 md:hidden border-t" aria-label="Mobile navigation">
+          <nav
+            className="flex flex-col gap-2 py-4 md:hidden border-t"
+            aria-label="Mobile navigation"
+          >
             {navItems.map((item) => (
               <Link
                 key={item.path}
