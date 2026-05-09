@@ -1,0 +1,176 @@
+{
+  "header": {
+    "tagline": "Ukraine",
+    "nav": {
+      "home": "Home",
+      "map": "Map",
+      "analytics": "Analytics",
+      "alerts": "Alerts"
+    },
+    "toggle_theme": "Toggle theme",
+    "menu": "Menu"
+  },
+  "home": {
+    "hero_title": "Real-Time Air Quality Monitoring",
+    "hero_subtitle": "Track air pollution levels across Ukraine with live data from monitoring stations nationwide",
+    "explore_map": "Explore Map",
+    "view_alerts": "View Alerts",
+    "stats": {
+      "active_stations": "Active Stations",
+      "monitoring_locations": "Monitoring locations",
+      "average_aqi": "Average AQI",
+      "nationwide": "Nationwide",
+      "best_quality": "Best Air Quality",
+      "no_data": "No data",
+      "needs_attention": "Needs Attention",
+      "aqi_prefix": "AQI: "
+    },
+    "map_section": {
+      "title": "Air Quality Map",
+      "subtitle": "Live monitoring stations across Ukraine",
+      "full_screen": "Full Screen Map →"
+    },
+    "cities_section": {
+      "title": "Major Cities",
+      "subtitle": "Current air quality in key urban areas",
+      "loading": "Loading stations…",
+      "view_all": "View All Cities"
+    },
+    "alerts_section": {
+      "title": "Recent Alerts",
+      "subtitle": "Air quality notifications and warnings",
+      "view_all": "All Alerts →"
+    },
+    "info_section": {
+      "title": "Understanding Air Quality",
+      "description": "The Air Quality Index (AQI) is a standardized indicator of air pollution levels. Lower values indicate better air quality, while higher values indicate health concerns. Stay informed and protect your health by checking air quality before outdoor activities.",
+      "learn_more": "Learn More"
+    }
+  },
+  "map": {
+    "aqi_levels": "AQI Levels",
+    "save_png": "Save as PNG",
+    "saving": "Saving…",
+    "popup": {
+      "view_details": "View Details →"
+    }
+  },
+  "analytics": {
+    "title": "Air Quality Analytics",
+    "subtitle": "Comprehensive analysis and comparison of air quality across Ukrainian cities",
+    "download_report": "Download Report",
+    "loading": "Loading analytics…",
+    "error_prefix": "Failed to load data: ",
+    "city_comparison": "City Comparison — Current AQI",
+    "no_data": "No data available",
+    "regional_overview": "Regional Overview",
+    "table": {
+      "region": "Region",
+      "stations": "Stations",
+      "avg_aqi": "Average AQI",
+      "status": "Status",
+      "good": "Good",
+      "moderate": "Moderate",
+      "unhealthy": "Unhealthy"
+    },
+    "pm25_levels": "PM2.5 Levels by City",
+    "all_stations": "All Monitoring Stations",
+    "no_stations": "No stations available"
+  },
+  "alerts": {
+    "title": "Air Quality Alerts",
+    "subtitle": "Stay informed about air quality warnings and health advisories",
+    "active": "Active Alerts",
+    "warnings": "Warnings",
+    "critical": "Critical",
+    "filter": {
+      "title": "Filter Alerts",
+      "severity": "Severity",
+      "all": "All Severities",
+      "warning": "Warning",
+      "danger": "Danger",
+      "critical": "Critical"
+    },
+    "showing_one": "Showing {{count}} alert",
+    "showing_other": "Showing {{count}} alerts",
+    "levels_title": "Alert Levels",
+    "no_alerts": "No alerts found",
+    "no_alerts_desc": "There are currently no alerts matching your filters",
+    "loading": "Loading alerts…",
+    "error_prefix": "Failed to load alerts: ",
+    "health": {
+      "title": "Health Guidelines",
+      "sensitive_label": "For Sensitive Groups:",
+      "sensitive_text": "People with respiratory conditions, children, and elderly should limit outdoor activities when air quality is moderate or worse.",
+      "public_label": "General Public:",
+      "public_text": "When AQI exceeds 150, everyone should reduce prolonged outdoor exertion and monitor symptoms.",
+      "protection_label": "Protection:",
+      "protection_text": "Consider wearing N95 masks outdoors during high pollution days and use air purifiers indoors."
+    }
+  },
+  "station": {
+    "back": "Back to home",
+    "loading": "Loading station data…",
+    "not_found": "Station not found",
+    "return_home": "Return to home",
+    "updated": "Updated",
+    "share": "Share",
+    "copied": "Copied!",
+    "export": "Export",
+    "aqi_section": {
+      "title": "Current Air Quality Index",
+      "health_rec": "Health Recommendation",
+      "no_measurements": "No current measurements available."
+    },
+    "pollutants_title": "Air Pollutant Levels",
+    "trend_title": "7-Day Trend",
+    "no_history": "No historical data available",
+    "info": {
+      "title": "Station Information",
+      "id": "Station ID",
+      "source": "Source",
+      "coordinates": "Coordinates",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "about_aqi": {
+      "title": "About Air Quality Index",
+      "text": "The AQI is calculated based on the concentration of major air pollutants including particulate matter (PM2.5, PM10), nitrogen dioxide (NO₂), carbon monoxide (CO), ozone (O₃), and sulfur dioxide (SO₂). Each pollutant is measured and converted to a standardized scale, with the highest value determining the overall AQI."
+    }
+  },
+  "aqi_labels": {
+    "Good": "Good",
+    "Moderate": "Moderate",
+    "Unhealthy for Sensitive Groups": "Unhealthy for Sensitive Groups",
+    "Unhealthy": "Unhealthy",
+    "Very Unhealthy": "Very Unhealthy",
+    "Hazardous": "Hazardous"
+  },
+  "aqi_legend": {
+    "title": "AQI Scale"
+  },
+  "not_found": {
+    "title": "404 — Page Not Found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "return": "Return to Home"
+  },
+  "seo": {
+    "home": {
+      "title": "Real-Time Air Quality Monitoring",
+      "description": "Track air pollution levels across Ukraine with live data from monitoring stations. View AQI, PM2.5, PM10 measurements and personalised health recommendations."
+    },
+    "map": {
+      "title": "Interactive Air Quality Map",
+      "description": "Explore real-time air quality data on an interactive map of Ukraine. See AQI levels at monitoring stations across all regions and oblasts."
+    },
+    "analytics": {
+      "title": "Air Quality Analytics",
+      "description": "Comprehensive air quality analysis and city comparisons across Ukraine. Explore AQI trends, PM2.5 concentrations and regional statistics for all Ukrainian oblasts."
+    },
+    "alerts": {
+      "title": "Air Quality Alerts",
+      "description": "Real-time air quality warnings and health advisories for Ukrainian cities. Stay informed about pollution levels that may affect your health."
+    }
+  }
+}

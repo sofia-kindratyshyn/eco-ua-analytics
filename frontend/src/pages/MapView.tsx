@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import { toPng } from "html-to-image";
 import { Download } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { getAqiLevel } from "../data/mockData";
 import AqiLegend from "../components/AqiLegendForMap";
 import { SEOMeta } from "../components/SEOMeta";
@@ -11,6 +12,7 @@ const ukraineCenter: [number, number] = [48.9, 31.2];
 
 const MapView = () => {
   const { stations } = useStations();
+  const { t, i18n } = useTranslation();
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -85,7 +87,7 @@ const MapView = () => {
               <p style="margin:0;"><strong>PM10:</strong> ${station.pm10} µg/m³</p>
             </div>
           </div>
-          <a href="/station/${station.id}" style="display:block;text-align:center;margin-top:8px;font-size:12px;color:#2E75B6;">View Details →</a>
+          <a href="/station/${station.id}" style="display:block;text-align:center;margin-top:8px;font-size:12px;color:#2E75B6;">${i18n.t("map.popup.view_details")}</a>
         </div>`,
         // Disable Leaflet's own auto-close so we control the lifetime manually
         { autoClose: false, closeOnClick: false }
@@ -153,7 +155,7 @@ const MapView = () => {
 
       markersRef.current.push(marker);
     });
-  }, [stations]);
+  }, [stations, i18n.language]);
 
   const handleSaveImage = async () => {
     if (!wrapperRef.current || saving) return;
@@ -174,14 +176,14 @@ const MapView = () => {
   return (
     <div ref={wrapperRef} className="relative flex h-[calc(100vh-4rem)] flex-col">
       <SEOMeta
-        title="Interactive Air Quality Map"
-        description="Explore real-time air quality data on an interactive map of Ukraine. See AQI levels at monitoring stations across all regions and oblasts."
+        title={t("seo.map.title")}
+        description={t("seo.map.description")}
         path="/map"
       />
       <div className="absolute right-4 bottom-8 z-[1000] max-w-xs">
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-md p-3">
           <h3 className="mb-2 text-xs font-semibold text-foreground">
-            AQI Levels
+            {t("map.aqi_levels")}
           </h3>
           <AqiLegend />
         </div>
@@ -194,7 +196,7 @@ const MapView = () => {
         title="Save map as PNG"
       >
         <Download className="h-4 w-4" />
-        {saving ? "Saving…" : "Save as PNG"}
+        {saving ? t("map.saving") : t("map.save_png")}
       </button>
 
       <div ref={containerRef} className="flex-1 z-0" />

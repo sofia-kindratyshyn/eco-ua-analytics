@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { getAQIColor, getAQILabel } from "../aqi";
 
 interface AQIBadgeProps {
@@ -6,11 +7,8 @@ interface AQIBadgeProps {
   showLabel?: boolean;
 }
 
-export function AQIBadge({
-  aqi,
-  size = "md",
-  showLabel = true,
-}: AQIBadgeProps) {
+export function AQIBadge({ aqi, size = "md", showLabel = true }: AQIBadgeProps) {
+  const { t } = useTranslation();
   const color = getAQIColor(aqi);
   const label = getAQILabel(aqi);
 
@@ -29,7 +27,11 @@ export function AQIBadge({
       style={{ backgroundColor: color, color: textColor, fontWeight: 600 }}
     >
       <span>{aqi}</span>
-      {showLabel && <span className="opacity-90">{label}</span>}
+      {showLabel && (
+        <span className="opacity-90">
+          {t(`aqi_labels.${label}`, label)}
+        </span>
+      )}
     </div>
   );
 }
