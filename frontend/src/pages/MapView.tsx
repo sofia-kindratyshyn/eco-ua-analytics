@@ -74,20 +74,32 @@ const MapView = () => {
 
       marker.bindPopup(
         `<div style="min-width:200px;padding:4px;">
-          <h4 style="font-weight:bold;font-size:14px;margin:0;">${station.name}</h4>
-          <p style="font-size:12px;color:#888;margin:2px 0 8px;">${station.region}</p>
+          <h4 style="font-weight:bold;font-size:14px;margin:0;">${
+            station.name
+          }</h4>
+          <p style="font-size:12px;color:#888;margin:2px 0 8px;">${
+            station.region
+          }</p>
           <div style="display:flex;align-items:center;gap:12px;">
             <div style="background:${level.color};color:${
-              station.aqi <= 100 ? "#333" : "#fff"
-            };width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;font-family:monospace;">
+          station.aqi <= 100 ? "#333" : "#fff"
+        };width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;font-family:monospace;">
               ${station.aqi}
             </div>
             <div style="font-size:12px;">
-              <p style="margin:0;"><strong>PM2.5:</strong> ${station.pm25} µg/m³</p>
-              <p style="margin:0;"><strong>PM10:</strong> ${station.pm10} µg/m³</p>
+              <p style="margin:0;"><strong>PM2.5:</strong> ${
+                station.pm25
+              } µg/m³</p>
+              <p style="margin:0;"><strong>PM10:</strong> ${
+                station.pm10
+              } µg/m³</p>
             </div>
           </div>
-          <a href="/station/${station.id}" style="display:block;text-align:center;margin-top:8px;font-size:12px;color:#2E75B6;">${i18n.t("map.popup.view_details")}</a>
+          <a href="/station/${
+            station.id
+          }" style="display:block;text-align:center;margin-top:8px;font-size:12px;color:#2E75B6;">${i18n.t(
+          "map.popup.view_details"
+        )}</a>
         </div>`,
         // Disable Leaflet's own auto-close so we control the lifetime manually
         { autoClose: false, closeOnClick: false }
@@ -110,7 +122,8 @@ const MapView = () => {
       // ── Hover behaviour ────────────────────────────────────────────────────
       marker.on("mouseover", () => {
         // If a different station is pinned, don't open a competing popup
-        if (pinnedRef.current !== null && pinnedRef.current !== station.id) return;
+        if (pinnedRef.current !== null && pinnedRef.current !== station.id)
+          return;
         cancelClose();
         // Close any un-pinned hover popup from another marker first
         if (pinnedRef.current === null) map.closePopup();
@@ -119,17 +132,13 @@ const MapView = () => {
 
       marker.on("mouseout", scheduleClose);
 
-      // ── Click → pin / unpin ────────────────────────────────────────────────
       marker.on("click", (e: L.LeafletMouseEvent) => {
-        // Stop propagation so the map's own click handler doesn't unpin immediately
         e.originalEvent.stopPropagation();
 
         if (pinnedRef.current === station.id) {
-          // Second click on the same marker → unpin
           pinnedRef.current = null;
           marker.closePopup();
         } else {
-          // Pin this marker; close whatever was open before
           if (pinnedRef.current !== null) map.closePopup();
           pinnedRef.current = station.id;
           cancelClose();
@@ -137,7 +146,6 @@ const MapView = () => {
         }
       });
 
-      // ── Keep popup alive while mouse is inside it ──────────────────────────
       marker.on("popupopen", () => {
         const el = marker.getPopup()?.getElement();
         if (!el) return;
@@ -161,11 +169,16 @@ const MapView = () => {
     if (!wrapperRef.current || saving) return;
     setSaving(true);
     try {
-      const options = { pixelRatio: window.devicePixelRatio || 1, cacheBust: true };
+      const options = {
+        pixelRatio: window.devicePixelRatio || 1,
+        cacheBust: true,
+      };
       await toPng(wrapperRef.current, options);
       const dataUrl = await toPng(wrapperRef.current, options);
       const link = document.createElement("a");
-      link.download = `air-quality-map-${new Date().toISOString().split("T")[0]}.png`;
+      link.download = `air-quality-map-${
+        new Date().toISOString().split("T")[0]
+      }.png`;
       link.href = dataUrl;
       link.click();
     } finally {
@@ -174,7 +187,10 @@ const MapView = () => {
   };
 
   return (
-    <div ref={wrapperRef} className="relative flex h-[calc(100vh-4rem)] flex-col">
+    <div
+      ref={wrapperRef}
+      className="relative flex h-[calc(100vh-4rem)] flex-col"
+    >
       <SEOMeta
         title={t("seo.map.title")}
         description={t("seo.map.description")}
