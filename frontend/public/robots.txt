@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Block internal/utility paths
+Disallow: /api/
+
+Sitemap: https://airquality.ua/sitemap.xml

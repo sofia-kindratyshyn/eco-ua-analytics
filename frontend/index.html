@@ -2,9 +2,91 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+
+    <!-- Primary meta (overridden per-page via SEOMeta component) -->
+    <title>AirQuality Ukraine — Real-Time Air Quality Monitoring</title>
+    <meta name="description" content="Track real-time air pollution levels across Ukraine with live data from monitoring stations nationwide. View AQI, PM2.5, PM10 and personalised health recommendations." />
+    <meta name="keywords" content="air quality, Ukraine, AQI, air pollution, PM2.5, PM10, NO2, monitoring, health, environment" />
+    <meta name="author" content="AirQuality Ukraine" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#2e75b6" />
+
+    <!-- Canonical (overridden per-page) -->
+    <link rel="canonical" href="https://airquality.ua/" />
+
+    <!-- Open Graph (overridden per-page) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AirQuality Ukraine" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://airquality.ua/" />
+    <meta property="og:title" content="AirQuality Ukraine — Real-Time Air Quality Monitoring" />
+    <meta property="og:description" content="Track real-time air pollution levels across Ukraine with live data from monitoring stations nationwide." />
+    <meta property="og:image" content="https://airquality.ua/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="AirQuality Ukraine — interactive air quality map of Ukraine" />
+
+    <!-- Twitter Card (overridden per-page) -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@airqualityua" />
+    <meta name="twitter:title" content="AirQuality Ukraine — Real-Time Air Quality Monitoring" />
+    <meta name="twitter:description" content="Track real-time air pollution levels across Ukraine with live data from monitoring stations." />
+    <meta name="twitter:image" content="https://airquality.ua/og-image.png" />
+    <meta name="twitter:image:alt" content="AirQuality Ukraine map" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Google Fonts performance hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Map tile server performance hint -->
+    <link rel="preconnect" href="https://tile.openstreetmap.org" />
+    <link rel="dns-prefetch" href="https://a.tile.openstreetmap.org" />
+    <link rel="dns-prefetch" href="https://b.tile.openstreetmap.org" />
+    <link rel="dns-prefetch" href="https://c.tile.openstreetmap.org" />
+
+    <!-- JSON-LD: WebSite + Organisation structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://airquality.ua/#website",
+          "url": "https://airquality.ua",
+          "name": "AirQuality Ukraine",
+          "description": "Real-time air quality monitoring across Ukraine",
+          "inLanguage": "en",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://airquality.ua/analytics?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://airquality.ua/#organization",
+          "name": "AirQuality Ukraine",
+          "url": "https://airquality.ua",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://airquality.ua/favicon.svg"
+          },
+          "description": "Providing real-time air quality data and health recommendations for Ukrainian cities."
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

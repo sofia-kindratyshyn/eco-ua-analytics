@@ -1,0 +1,19 @@
+{
+  "name": "AirQuality Ukraine",
+  "short_name": "AirQuality UA",
+  "description": "Real-time air quality monitoring across Ukraine",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2e75b6",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "utilities", "environment"],
+  "lang": "en"
+}
