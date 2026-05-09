@@ -4,6 +4,7 @@ import { StatsCard } from "../components/StatsCard";
 import { AirQualityMap } from "../components/AirQualityApp";
 import { CityCard } from "../components/CityCard";
 import { AlertCard } from "../components/AlertCard";
+import { SEOMeta } from "../components/SEOMeta";
 import { useStations, useAlerts, useOverallStats } from "../hooks/useApiData";
 
 export function HomePage() {
@@ -35,6 +36,19 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen bg-muted/30">
+      <SEOMeta
+        title="Real-Time Air Quality Monitoring"
+        description="Track air pollution levels across Ukraine with live data from monitoring stations. View AQI, PM2.5, PM10 measurements and personalised health recommendations."
+        path="/"
+        schema={{
+          "@type": "WebPage",
+          "@id": "https://airquality.ua/#webpage",
+          "name": "AirQuality Ukraine — Real-Time Air Quality Monitoring",
+          "url": "https://airquality.ua/",
+          "description": "Live air quality monitoring across Ukraine",
+          "isPartOf": { "@id": "https://airquality.ua/#website" },
+        }}
+      />
       <section className="bg-linear-to-br from-primary/5 via-secondary/5 to-primary/5 py-12 md:py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center mb-8">

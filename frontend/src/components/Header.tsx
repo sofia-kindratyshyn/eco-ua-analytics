@@ -43,11 +43,12 @@ export function Header() {
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
+                aria-current={isActive(item.path) ? "page" : undefined}
                 className={`text-sm transition-colors hover:text-primary ${
                   isActive(item.path) ? "text-primary" : "text-foreground"
                 }`}
@@ -78,11 +79,12 @@ export function Header() {
         </div>
 
         {mobileMenuOpen && (
-          <nav className="flex flex-col gap-2 py-4 md:hidden border-t">
+          <nav className="flex flex-col gap-2 py-4 md:hidden border-t" aria-label="Mobile navigation">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
+                aria-current={isActive(item.path) ? "page" : undefined}
                 className={`px-3 py-2 rounded-md text-sm transition-colors ${
                   isActive(item.path)
                     ? "bg-primary/10 text-primary"

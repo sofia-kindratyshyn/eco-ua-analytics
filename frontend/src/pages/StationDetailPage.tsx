@@ -1,9 +1,17 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router";
-import { ArrowLeft, Check, Download, Share2, MapPin, Clock } from "lucide-react";
 import {
-  LineChart,
+  ArrowLeft,
+  Check,
+  Download,
+  Share2,
+  MapPin,
+  Clock,
+} from "lucide-react";
+import {
+  ComposedChart,
   Line,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -14,6 +22,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { getAQILevel } from "../aqi";
 import { AQIBadge } from "../components/AQIBadge";
+import { SEOMeta } from "../components/SEOMeta";
 import {
   useStationDetail,
   getMeasurementValue,
@@ -21,7 +30,9 @@ import {
 } from "../hooks/useApiData";
 
 function downloadCSV(filename: string, content: string) {
-  const blob = new Blob(["\uFEFF" + content], { type: "text/csv;charset=utf-8;" });
+  const blob = new Blob(["\uFEFF" + content], {
+    type: "text/csv;charset=utf-8;",
+  });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -46,17 +57,13 @@ export function StationDetailPage() {
   if (error || !station) {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
-        <h1 className="text-2xl mb-4">
-          {error ?? "Station not found"}
-        </h1>
+        <h1 className="text-2xl mb-4">{error ?? "Station not found"}</h1>
         <Link to="/" className="text-primary hover:underline">
           Return to home
         </Link>
       </div>
     );
   }
-
-  // Capture as non-null const so closures don't lose the narrowing
   const s = station;
 
   const measurements = s.latest_measurements;
@@ -64,12 +71,42 @@ export function StationDetailPage() {
   const aqiLevel = getAQILevel(aqi);
 
   const pollutants = [
-    { name: "PM2.5", value: getMeasurementValue(measurements, "pm25"), unit: "µg/m³", color: "#3b82f6" },
-    { name: "PM10",  value: getMeasurementValue(measurements, "pm10"), unit: "µg/m³", color: "#8b5cf6" },
-    { name: "NO₂",  value: getMeasurementValue(measurements, "no2"),  unit: "µg/m³", color: "#f59e0b" },
-    { name: "CO",   value: getMeasurementValue(measurements, "co"),   unit: "ppm",   color: "#ef4444" },
-    { name: "O₃",   value: getMeasurementValue(measurements, "o3"),   unit: "µg/m³", color: "#10b981" },
-    { name: "SO₂",  value: getMeasurementValue(measurements, "so2"),  unit: "µg/m³", color: "#6366f1" },
+    {
+      name: "PM2.5",
+      value: getMeasurementValue(measurements, "pm25"),
+      unit: "µg/m³",
+      color: "#3b82f6",
+    },
+    {
+      name: "PM10",
+      value: getMeasurementValue(measurements, "pm10"),
+      unit: "µg/m³",
+      color: "#8b5cf6",
+    },
+    {
+      name: "NO₂",
+      value: getMeasurementValue(measurements, "no2"),
+      unit: "µg/m³",
+      color: "#f59e0b",
+    },
+    {
+      name: "CO",
+      value: getMeasurementValue(measurements, "co"),
+      unit: "ppm",
+      color: "#ef4444",
+    },
+    {
+      name: "O₃",
+      value: getMeasurementValue(measurements, "o3"),
+      unit: "µg/m³",
+      color: "#10b981",
+    },
+    {
+      name: "SO₂",
+      value: getMeasurementValue(measurements, "so2"),
+      unit: "µg/m³",
+      color: "#6366f1",
+    },
   ];
 
   const lastUpdate = s.last_measured_at;
@@ -107,7 +144,11 @@ export function StationDetailPage() {
     const url = window.location.href;
     const title = `Air Quality — ${s.name}`;
     if (navigator.share) {
-      try { await navigator.share({ title, url }); } catch { /* user cancelled */ }
+      try {
+        await navigator.share({ title, url });
+      } catch {
+        /* user cancelled */
+      }
       return;
     }
     await navigator.clipboard.writeText(url);
@@ -117,6 +158,31 @@ export function StationDetailPage() {
 
   return (
     <div className="min-h-screen bg-muted/30">
+      <SEOMeta
+        title={`${s.name} — Air Quality`}
+        description={`Live air quality data for ${s.name}. Current AQI: ${
+          aqi > 0 ? aqi : "N/A"
+        } (${
+          aqiLevel.label
+        }). Measurements include PM2.5, PM10, NO₂, CO, O₃ and SO₂ with a 7-day historical trend.`}
+        path={`/station/${s.id}`}
+        schema={{
+          "@type": "Dataset",
+          name: `Air Quality Data — ${s.name}`,
+          description: `Real-time and historical air quality measurements from ${s.name} monitoring station`,
+          url: `https://airquality.ua/station/${s.id}`,
+          spatialCoverage: {
+            "@type": "Place",
+            name: s.name,
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: s.latitude,
+              longitude: s.longitude,
+            },
+          },
+          variableMeasured: ["AQI", "PM2.5", "PM10", "NO2", "CO", "O3", "SO2"],
+        }}
+      />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6">
           <Link
@@ -133,7 +199,8 @@ export function StationDetailPage() {
               <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <MapPin className="h-4 w-4" />
-                  {Number(s.latitude).toFixed(4)}, {Number(s.longitude).toFixed(4)}
+                  {Number(s.latitude).toFixed(4)},{" "}
+                  {Number(s.longitude).toFixed(4)}
                 </span>
                 {lastUpdate && (
                   <span className="flex items-center gap-1">
@@ -152,7 +219,11 @@ export function StationDetailPage() {
                 onClick={handleShare}
                 className="px-4 py-2 text-sm border border-border rounded-md hover:bg-muted transition-colors flex items-center gap-2"
               >
-                {copied ? <Check className="h-4 w-4 text-green-500" /> : <Share2 className="h-4 w-4" />}
+                {copied ? (
+                  <Check className="h-4 w-4 text-green-500" />
+                ) : (
+                  <Share2 className="h-4 w-4" />
+                )}
                 {copied ? "Copied!" : "Share"}
               </button>
               <button
@@ -181,7 +252,9 @@ export function StationDetailPage() {
               Health Recommendation
             </h3>
             <p className="text-sm text-muted-foreground">
-              {aqi > 0 ? aqiLevel.healthAdvice : "No current measurements available."}
+              {aqi > 0
+                ? aqiLevel.healthAdvice
+                : "No current measurements available."}
             </p>
           </div>
         </div>
@@ -214,18 +287,46 @@ export function StationDetailPage() {
         <div className="bg-card rounded-lg border border-border p-6">
           <h2 className="text-xl mb-4">7-Day Trend</h2>
           {history.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No historical data available</p>
+            <p className="text-muted-foreground text-sm">
+              No historical data available
+            </p>
           ) : (
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={history}>
+                <ComposedChart data={history}>
+                  <defs>
+                    <linearGradient id="aqiRange" x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="5%"
+                        stopColor="#2E75B6"
+                        stopOpacity={0.15}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor="#2E75B6"
+                        stopOpacity={0.03}
+                      />
+                    </linearGradient>
+                    <linearGradient id="pm25Range" x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="5%"
+                        stopColor="#34A853"
+                        stopOpacity={0.15}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor="#34A853"
+                        stopOpacity={0.03}
+                      />
+                    </linearGradient>
+                  </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis
                     dataKey="date"
                     tick={{ fontSize: 12 }}
                     tickFormatter={(value) => {
-                      const date = new Date(value);
-                      return `${date.getMonth() + 1}/${date.getDate()}`;
+                      const d = new Date(value);
+                      return `${d.getMonth() + 1}/${d.getDate()}`;
                     }}
                   />
                   <YAxis tick={{ fontSize: 12 }} />
@@ -236,14 +337,71 @@ export function StationDetailPage() {
                       borderRadius: "8px",
                       color: "var(--card-foreground)",
                     }}
+                    formatter={(value, name) => {
+                      if (name === "AQI range" || name === "PM2.5 range")
+                        return null;
+                      if (value === undefined || value === null)
+                        return ["—", name];
+                      return [value, name];
+                    }}
                   />
-                  <Legend />
+                  <Legend
+                    formatter={(value) =>
+                      value === "AQI range" || value === "PM2.5 range"
+                        ? null
+                        : value
+                    }
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="aqiMax"
+                    stroke="none"
+                    fill="url(#aqiRange)"
+                    legendType="none"
+                    name="AQI range"
+                    tooltipType="none"
+                    activeDot={false}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="aqiMin"
+                    stroke="none"
+                    fill="white"
+                    fillOpacity={1}
+                    legendType="none"
+                    name="AQI range"
+                    tooltipType="none"
+                    activeDot={false}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="pm25Max"
+                    stroke="none"
+                    fill="url(#pm25Range)"
+                    legendType="none"
+                    name="PM2.5 range"
+                    tooltipType="none"
+                    activeDot={false}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="pm25Min"
+                    stroke="none"
+                    fill="white"
+                    fillOpacity={1}
+                    legendType="none"
+                    name="PM2.5 range"
+                    tooltipType="none"
+                    activeDot={false}
+                  />
+                  {/* Mean lines */}
                   <Line
                     type="monotone"
                     dataKey="aqi"
                     stroke="#2E75B6"
                     strokeWidth={2}
                     dot={{ r: 4 }}
+                    activeDot={{ r: 6 }}
                     name="AQI"
                   />
                   <Line
@@ -252,9 +410,10 @@ export function StationDetailPage() {
                     stroke="#34A853"
                     strokeWidth={2}
                     dot={{ r: 4 }}
-                    name="PM2.5"
+                    activeDot={{ r: 6 }}
+                    name="PM2.5 (µg/m³)"
                   />
-                </LineChart>
+                </ComposedChart>
               </ResponsiveContainer>
             </div>
           )}
@@ -275,7 +434,8 @@ export function StationDetailPage() {
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">Coordinates</dt>
                 <dd style={{ fontWeight: 500 }}>
-                  {Number(s.latitude).toFixed(4)}, {Number(s.longitude).toFixed(4)}
+                  {Number(s.latitude).toFixed(4)},{" "}
+                  {Number(s.longitude).toFixed(4)}
                 </dd>
               </div>
               <div className="flex justify-between">

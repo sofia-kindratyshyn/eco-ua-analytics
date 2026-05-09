@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#2e75b6"/>
+  <!-- Wind wave 1 -->
+  <path d="M6 11 Q10 8 14 11 Q18 14 22 11 C24 9.5 26 9.5 26 11" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Wind wave 2 -->
+  <path d="M6 16 Q10 13 14 16 Q18 19 22 16 C24 14.5 26 14.5 26 16" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Wind wave 3 -->
+  <path d="M6 21 Q10 18 14 21 Q18 24 22 21 C24 19.5 26 19.5 26 21" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- AQI good indicator dot -->
+  <circle cx="27" cy="6" r="3.5" fill="#00e400"/>
+</svg>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Bell, Filter } from "lucide-react";
 import { AlertCard } from "../components/AlertCard";
+import { SEOMeta } from "../components/SEOMeta";
 import { useAlerts } from "../hooks/useApiData";
 
 export function AlertsPage() {
@@ -16,6 +17,11 @@ export function AlertsPage() {
 
   return (
     <div className="min-h-screen bg-muted/30">
+      <SEOMeta
+        title="Air Quality Alerts"
+        description="Real-time air quality warnings and health advisories for Ukrainian cities. Stay informed about pollution levels that may affect your health."
+        path="/alerts"
+      />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl mb-2">Air Quality Alerts</h1>

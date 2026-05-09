@@ -1,3 +1,22 @@
+const PM25_BREAKPOINTS = [
+  { cLow: 0,     cHigh: 12.0,  iLow: 0,   iHigh: 50  },
+  { cLow: 12.1,  cHigh: 35.4,  iLow: 51,  iHigh: 100 },
+  { cLow: 35.5,  cHigh: 55.4,  iLow: 101, iHigh: 150 },
+  { cLow: 55.5,  cHigh: 150.4, iLow: 151, iHigh: 200 },
+  { cLow: 150.5, cHigh: 250.4, iLow: 201, iHigh: 300 },
+  { cLow: 250.5, cHigh: 350.4, iLow: 301, iHigh: 400 },
+  { cLow: 350.5, cHigh: 500.4, iLow: 401, iHigh: 500 },
+];
+
+export function pm25ToAqi(pm25: number): number {
+  if (pm25 <= 0) return 0;
+  const bp = PM25_BREAKPOINTS.find((b) => pm25 >= b.cLow && pm25 <= b.cHigh);
+  if (!bp) return 500;
+  return Math.round(
+    ((bp.iHigh - bp.iLow) / (bp.cHigh - bp.cLow)) * (pm25 - bp.cLow) + bp.iLow
+  );
+}
+
 export interface AQILevel {
   label: string;
   color: string;
@@ -99,169 +118,6 @@ export interface Alert {
   timestamp: string;
   aqi: number;
 }
-
-// Mock data for Ukrainian cities
-export const MOCK_STATIONS: Station[] = [
-  {
-    id: "1",
-    name: "Kyiv Central",
-    city: "Kyiv",
-    region: "Kyiv Oblast",
-    lat: 50.4501,
-    lng: 30.5234,
-    aqi: 72,
-    pm25: 18.5,
-    pm10: 32.1,
-    no2: 24.3,
-    co: 0.4,
-    o3: 45.2,
-    so2: 5.1,
-    lastUpdate: "2026-03-07T14:30:00Z",
-    trend: "down",
-  },
-  {
-    id: "2",
-    name: "Lviv Prospekt",
-    city: "Lviv",
-    region: "Lviv Oblast",
-    lat: 49.8397,
-    lng: 24.0297,
-    aqi: 45,
-    pm25: 12.3,
-    pm10: 21.5,
-    no2: 18.2,
-    co: 0.3,
-    o3: 38.1,
-    so2: 3.2,
-    lastUpdate: "2026-03-07T14:30:00Z",
-    trend: "stable",
-  },
-  {
-    id: "3",
-    name: "Odesa Seaside",
-    city: "Odesa",
-    region: "Odesa Oblast",
-    lat: 46.4825,
-    lng: 30.7233,
-    aqi: 38,
-    pm25: 9.8,
-    pm10: 18.3,
-    no2: 15.1,
-    co: 0.2,
-    o3: 42.5,
-    so2: 4.1,
-    lastUpdate: "2026-03-07T14:30:00Z",
-    trend: "down",
-  },
-  {
-    id: "4",
-    name: "Kharkiv Industrial",
-    city: "Kharkiv",
-    region: "Kharkiv Oblast",
-    lat: 49.9935,
-    lng: 36.2304,
-    aqi: 118,
-    pm25: 38.2,
-    pm10: 65.4,
-    no2: 42.1,
-    co: 0.8,
-    o3: 28.3,
-    so2: 12.5,
-    lastUpdate: "2026-03-07T14:30:00Z",
-    trend: "up",
-  },
-  {
-    id: "5",
-    name: "Dnipro Center",
-    city: "Dnipro",
-    region: "Dnipropetrovsk Oblast",
-    lat: 48.4647,
-    lng: 35.0462,
-    aqi: 95,
-    pm25: 28.5,
-    pm10: 45.2,
-    no2: 32.4,
-    co: 0.6,
-    o3: 35.1,
-    so2: 8.3,
-    lastUpdate: "2026-03-07T14:30:00Z",
-    trend: "stable",
-  },
-  {
-    id: "6",
-    name: "Zaporizhzhia South",
-    city: "Zaporizhzhia",
-    region: "Zaporizhzhia Oblast",
-    lat: 47.8388,
-    lng: 35.1396,
-    aqi: 82,
-    pm25: 22.1,
-    pm10: 38.5,
-    no2: 28.3,
-    co: 0.5,
-    o3: 40.2,
-    so2: 6.8,
-    lastUpdate: "2026-03-07T14:30:00Z",
-    trend: "down",
-  },
-  {
-    id: "7",
-    name: "Ivano-Frankivsk Park",
-    city: "Ivano-Frankivsk",
-    region: "Ivano-Frankivsk Oblast",
-    lat: 48.9226,
-    lng: 24.7111,
-    aqi: 32,
-    pm25: 8.2,
-    pm10: 15.3,
-    no2: 12.1,
-    co: 0.2,
-    o3: 48.5,
-    so2: 2.8,
-    lastUpdate: "2026-03-07T14:30:00Z",
-    trend: "stable",
-  },
-  {
-    id: "8",
-    name: "Vinnytsia Residential",
-    city: "Vinnytsia",
-    region: "Vinnytsia Oblast",
-    lat: 49.2331,
-    lng: 28.4682,
-    aqi: 58,
-    pm25: 15.2,
-    pm10: 26.8,
-    no2: 20.5,
-    co: 0.4,
-    o3: 43.2,
-    so2: 4.5,
-    lastUpdate: "2026-03-07T14:30:00Z",
-    trend: "up",
-  },
-];
-
-export const MOCK_ALERTS: Alert[] = [
-  {
-    id: "alert-1",
-    severity: "warning",
-    city: "Kharkiv",
-    region: "Kharkiv Oblast",
-    message:
-      "Air quality has reached unhealthy levels for sensitive groups. Reduce outdoor activities if you experience symptoms.",
-    timestamp: "2026-03-07T12:15:00Z",
-    aqi: 118,
-  },
-  {
-    id: "alert-2",
-    severity: "warning",
-    city: "Dnipro",
-    region: "Dnipropetrovsk Oblast",
-    message:
-      "Moderate air quality detected. Sensitive individuals should consider limiting prolonged outdoor exertion.",
-    timestamp: "2026-03-07T10:30:00Z",
-    aqi: 95,
-  },
-];
 
 // Generate historical data for charts
 export function generateHistoricalData(station: Station, days: number = 7) {

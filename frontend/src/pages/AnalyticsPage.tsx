@@ -21,6 +21,7 @@ function downloadCSV(filename: string, content: string) {
   URL.revokeObjectURL(url);
 }
 import { CityCard } from "../components/CityCard";
+import { SEOMeta } from "../components/SEOMeta";
 import { useStations } from "../hooks/useApiData";
 
 export function AnalyticsPage() {
@@ -75,6 +76,17 @@ export function AnalyticsPage() {
 
   return (
     <div className="min-h-screen bg-muted/30">
+      <SEOMeta
+        title="Air Quality Analytics"
+        description="Comprehensive air quality analysis and city comparisons across Ukraine. Explore AQI trends, PM2.5 concentrations and regional statistics for all Ukrainian oblasts."
+        path="/analytics"
+        schema={{
+          "@type": "DataCatalog",
+          "name": "Ukraine Air Quality Analytics",
+          "description": "Aggregated air quality measurements from monitoring stations across Ukraine",
+          "url": "https://airquality.ua/analytics",
+        }}
+      />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
